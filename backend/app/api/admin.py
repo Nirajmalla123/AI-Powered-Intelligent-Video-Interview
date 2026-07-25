@@ -13,5 +13,6 @@ def dashboard(
     user=Depends(require_role("admin")),
 ):
     return {
-        "message": "Welcome Admin"
+        "message": "Welcome Admin",
+        "user": user.email,
     }

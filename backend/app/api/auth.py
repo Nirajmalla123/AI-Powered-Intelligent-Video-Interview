@@ -13,6 +13,10 @@ from app.schemas.user import (
 from app.services.auth_service import AuthService
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.core.jwt import (
+    create_access_token,
+    create_refresh_token,
+)
 
 router = APIRouter(
     prefix="/auth",
@@ -53,6 +57,19 @@ def login(
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
 
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh(user: User = Depends(get_current_user)):
+
+    return {
+        "access_token": create_access_token(
+            {"sub": user.email}
+        ),
+        "refresh_token": create_refresh_token(
+            {"sub": user.email}
+        ),
+        "token_type": "bearer",
+    }
 
 @router.get("/me", response_model=UserResponse)
 def current_user(
