@@ -15,3 +15,15 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+
+API_V1_PREFIX: str = "/api/v1"
+
+PROJECT_NAME: str = "AI-Powered Intelligent Video Interview Assessment"
+
+PROJECT_VERSION: str = "1.0.0"
+
+PROJECT_DESCRIPTION: str = (
+    "AI-Powered Intelligent Video Interview Assessment System"
+)

@@ -8,12 +8,38 @@ from app.api.auth import router as auth_router
 from app.api.admin import router as admin_router
 
 
+from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.logger import setup_logging
+from app.core.exceptions import register_exception_handlers
+
+from app.middleware.request_logging import RequestLoggingMiddleware
+from app.middleware.process_time import ProcessTimeMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+
+setup_logging()
 app = FastAPI(
     title="AI Interview Assessment System API",
     version="1.0.0",
     description="Backend API for the AI-Powered Intelligent Video Interview Assessment System",
 )
+
+
+app.add_middleware(ProcessTimeMiddleware)
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+register_exception_handlers(app)
+
+
 
 # Register routers
 app.include_router(auth_router)
@@ -61,3 +87,11 @@ def jwt_verify():
     payload = verify_token(token)
 
     return payload
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "success": True,
+        "status": "healthy"
+    }
