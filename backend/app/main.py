@@ -4,9 +4,18 @@ from sqlalchemy import text
 from app.core.database import engine
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token, verify_token
-from app.api.auth import router as auth_router
-from app.api.admin import router as admin_router
-
+from app.api import (
+    auth_router,
+    admin_router,
+    candidate_profile_router,
+    interview_router,
+    question_router,
+    candidate_answer_router,
+    report_router,
+    score_router,
+    upload_router,
+    resume_router,
+)
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,17 +26,22 @@ from app.middleware.request_logging import RequestLoggingMiddleware
 from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 
+
+
 setup_logging()
 app = FastAPI(
     title="AI Interview Assessment System API",
     version="1.0.0",
     description="Backend API for the AI-Powered Intelligent Video Interview Assessment System",
 )
-
+register_exception_handlers(app)
 
 app.add_middleware(ProcessTimeMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+
+
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,13 +51,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-register_exception_handlers(app)
+
 
 
 
 # Register routers
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(candidate_profile_router)
+app.include_router(interview_router)
+app.include_router(question_router)
+app.include_router(candidate_answer_router)
+app.include_router(report_router)
+app.include_router(score_router)
+app.include_router(upload_router)
+app.include_router(resume_router)
+
 
 
 @app.get("/")

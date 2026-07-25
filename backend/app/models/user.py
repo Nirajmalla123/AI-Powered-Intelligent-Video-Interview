@@ -3,15 +3,15 @@ from uuid import uuid4
 
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 
 
 class UserRole(str, Enum):
     CANDIDATE = "candidate"
-    RECRUITER = "recruiter"
     ADMIN = "admin"
+
 
 
 class User(Base):
@@ -41,4 +41,10 @@ class User(Base):
         SqlEnum(UserRole),
         default=UserRole.CANDIDATE,
         nullable=False,
+    )
+
+    candidate_profile: Mapped["CandidateProfile"] = relationship(
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete",
     )
