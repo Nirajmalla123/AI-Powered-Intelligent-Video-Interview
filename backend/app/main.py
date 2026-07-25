@@ -5,6 +5,8 @@ from app.core.database import engine
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token, verify_token
 from app.api.auth import router as auth_router
+from app.api.admin import router as admin_router
+
 
 
 app = FastAPI(
@@ -12,8 +14,10 @@ app = FastAPI(
     version="1.0.0",
     description="Backend API for the AI-Powered Intelligent Video Interview Assessment System",
 )
-app.include_router(auth_router)
 
+# Register routers
+app.include_router(auth_router)
+app.include_router(admin_router)
 
 
 @app.get("/")
