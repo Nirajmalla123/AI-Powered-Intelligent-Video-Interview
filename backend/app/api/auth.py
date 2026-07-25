@@ -18,6 +18,10 @@ from app.core.jwt import (
     create_refresh_token,
 )
 
+from app.schemas.user import MessageResponse
+
+
+
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"],
@@ -78,8 +82,12 @@ def current_user(
     return user
 
 
-@router.post("/logout")
+@router.post(
+    "/logout",
+    response_model=MessageResponse,
+)
 def logout():
-    return {
-        "message": "Logout successful."
-    }
+
+    return MessageResponse(
+        message="Logout successful."
+    )

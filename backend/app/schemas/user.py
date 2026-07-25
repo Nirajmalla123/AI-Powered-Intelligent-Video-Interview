@@ -26,3 +26,12 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MessageResponse(BaseModel):
+    message: str
+
+
+class AdminDashboardResponse(BaseModel):
+    message: str
+    user: str
