@@ -83,3 +83,6 @@ class CandidateProfileService:
         )
 
         return True
+
+
+
