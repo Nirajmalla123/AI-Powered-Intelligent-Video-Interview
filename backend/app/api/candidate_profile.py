@@ -44,11 +44,11 @@ def create_candidate_profile(
             status_code=400,
             detail="Candidate profile already exists"
         )
-
     return service.create_profile(
         db,
         current_user.id,
-        data
+        data,
+        current_user
     )
 
 

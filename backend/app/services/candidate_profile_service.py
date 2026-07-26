@@ -22,16 +22,17 @@ class CandidateProfileService:
             user_id
         )
 
-
     def create_profile(
         self,
         db: Session,
         user_id: str,
-        data
+        data,
+        current_user
     ):
 
         profile = CandidateProfile(
             user_id=user_id,
+            full_name=current_user.full_name,
             **data.model_dump()
         )
 
@@ -39,7 +40,6 @@ class CandidateProfileService:
             db,
             profile
         )
-
 
     def update_profile(
         self,
