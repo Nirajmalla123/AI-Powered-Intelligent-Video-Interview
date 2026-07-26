@@ -46,21 +46,19 @@ def register(
             status_code=400,
             detail=str(e),
         )
-
 @router.post("/login", response_model=TokenResponse)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    user_data: UserLogin,
     db: Session = Depends(get_db),
 ):
     try:
-        user = UserLogin(
-            email=form_data.username,
-            password=form_data.password,
-        )
-        return AuthService.login(db, user)
-    except ValueError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        return AuthService.login(db, user_data)
 
+    except ValueError as e:
+        raise HTTPException(
+            status_code=401,
+            detail=str(e)
+        )
 
 @router.post("/refresh", response_model=TokenResponse)
 def refresh(user: User = Depends(get_current_user)):
