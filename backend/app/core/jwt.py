@@ -12,13 +12,15 @@ def create_access_token(data: dict):
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
-    payload.update({"exp": expire})
+    payload["exp"] = int(expire.timestamp())
 
-    return jwt.encode(
+    token = jwt.encode(
         payload,
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
+
+    return str(token)
 
 
 def create_refresh_token(data: dict):
@@ -28,16 +30,19 @@ def create_refresh_token(data: dict):
         days=settings.REFRESH_TOKEN_EXPIRE_DAYS
     )
 
-    payload.update({"exp": expire})
+    payload["exp"] = int(expire.timestamp())
 
-    return jwt.encode(
+    token = jwt.encode(
         payload,
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
 
+    return str(token)
+
 
 def verify_token(token: str):
+
     return jwt.decode(
         token,
         settings.SECRET_KEY,

@@ -1,11 +1,9 @@
 import api from "./api";
 
-
 interface LoginPayload {
   email: string;
   password: string;
 }
-
 
 interface RegisterPayload {
   full_name: string;
@@ -13,9 +11,7 @@ interface RegisterPayload {
   password: string;
 }
 
-
 export const authService = {
-
 
   register: async (
     data: RegisterPayload
@@ -38,13 +34,31 @@ export const authService = {
 
     console.log("LOGIN PAYLOAD:", data);
 
+    const formData = new URLSearchParams();
+
+    formData.append(
+      "username",
+      data.email
+    );
+
+    formData.append(
+      "password",
+      data.password
+    );
+
+
     const response = await api.post(
       "/auth/login",
-      data
+      formData,
+      {
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded",
+        },
+      }
     );
 
     return response.data;
   },
-
 
 };

@@ -46,29 +46,55 @@ def register(
             status_code=400,
             detail=str(e),
         )
-@router.post("/login", response_model=TokenResponse)
+
+
+
+@router.post(
+    "/login",
+    response_model=TokenResponse,
+)
 def login(
-    user_data: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ):
+
     try:
-        return AuthService.login(db, user_data)
+        user_data = UserLogin(
+            email=form_data.username,
+            password=form_data.password,
+        )
+
+        return AuthService.login(
+            db,
+            user_data,
+        )
 
     except ValueError as e:
         raise HTTPException(
             status_code=401,
-            detail=str(e)
+            detail=str(e),
         )
 
-@router.post("/refresh", response_model=TokenResponse)
-def refresh(user: User = Depends(get_current_user)):
+
+    
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+)
+def refresh(
+    user: User = Depends(get_current_user),
+):
 
     return {
-        "access_token": create_access_token(
-            {"sub": user.email}
+        "access_token": str(
+            create_access_token(
+                {"sub": str(user.email)}
+            )
         ),
-        "refresh_token": create_refresh_token(
-            {"sub": user.email}
+        "refresh_token": str(
+            create_refresh_token(
+                {"sub": str(user.email)}
+            )
         ),
         "token_type": "bearer",
     }

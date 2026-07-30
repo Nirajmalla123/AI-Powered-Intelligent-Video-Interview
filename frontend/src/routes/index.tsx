@@ -4,9 +4,22 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/auth/LoginPage";
 import RegisterPage from "@/pages/auth/RegisterPage";
 
+import DashboardPage from "@/pages/DashboardPage";
+import ProfilePage from "@/pages/ProfilePage";
+import ResumePage from "@/pages/ResumePage";
+
+import CandidateLayout from "@/layouts/CandidateLayout";
+
+
+import ReportsPage from "@/pages/ReportsPage";
+
+import InterviewsPage from "@/pages/InterviewsPage";
+import StartInterviewPage from "@/pages/StartInterviewPage";
 
 export function AppRouter() {
+
   return (
+
     <Routes>
 
       <Route
@@ -14,16 +27,65 @@ export function AppRouter() {
         element={<HomePage />}
       />
 
+
       <Route
         path="/login"
         element={<LoginPage />}
       />
+
 
       <Route
         path="/register"
         element={<RegisterPage />}
       />
 
+
+      <Route element={<CandidateLayout />}>
+
+        <Route
+          path="/dashboard"
+          element={<DashboardPage />}
+        />
+
+
+        <Route
+          path="/profile"
+          element={<ProfilePage />}
+        />
+
+
+        <Route
+          path="/resume"
+          element={<ResumePage />}
+        />
+
+
+        <Route
+          path="/interviews"
+          element={<InterviewsPage />}
+        />   
+        <Route
+          path="/start-interview"
+          element={<StartInterviewPage />}
+        />
+
+        <Route
+          path="/reports"
+          element={<ReportsPage />}
+        /> 
+
+
+        <Route
+          path="/start-interview"
+          element={<StartInterviewPage />}
+        />
+
+
+      </Route>
+
+
     </Routes>
+
   );
+
 }

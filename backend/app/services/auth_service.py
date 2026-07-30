@@ -49,12 +49,20 @@ class AuthService:
         ):
             raise ValueError("Invalid email or password.")
 
+        access_token = create_access_token(
+            {
+                "sub": str(user.email)
+            }
+        )
+
+        refresh_token = create_refresh_token(
+            {
+                "sub": str(user.email)
+            }
+        )
+
         return {
-            "access_token": create_access_token(
-                {"sub": user.email}
-            ),
-            "refresh_token": create_refresh_token(
-                {"sub": user.email}
-            ),
+            "access_token": str(access_token),
+            "refresh_token": str(refresh_token),
             "token_type": "bearer",
         }
