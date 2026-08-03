@@ -18,7 +18,7 @@ from app.api import (
 )
 
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
 from app.core.logger import setup_logging
 from app.core.exceptions import register_exception_handlers
 
@@ -26,6 +26,7 @@ from app.middleware.request_logging import RequestLoggingMiddleware
 from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 
+import os
 
 
 setup_logging()
@@ -41,8 +42,6 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 
 
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -52,7 +51,12 @@ app.add_middleware(
 )
 
 
+# Create uploads directories if they don't exist
+os.makedirs("uploads/profile_images", exist_ok=True)
+os.makedirs("uploads/resumes", exist_ok=True)
 
+# Mount the uploads directory as static files
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # Register routers

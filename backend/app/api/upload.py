@@ -21,6 +21,12 @@ from app.schemas.upload import (
 )
 
 
+from app.models.candidate_profile import CandidateProfile
+
+import os
+import shutil
+
+
 from app.services.upload_service import (
     UploadService,
 )
@@ -69,3 +75,74 @@ async def upload_video(
         video_url=video_path,
         message="Video uploaded successfully"
     )
+
+@router.post(
+    "/profile-image"
+)
+async def upload_profile_image(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    if not file.content_type.startswith(
+        "image/"
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Only image files are allowed"
+        )
+
+
+    upload_dir = "uploads/profile_images"
+
+    os.makedirs(
+        upload_dir,
+        exist_ok=True
+    )
+
+
+    file_path = (
+        f"{upload_dir}/{current_user.id}_{file.filename}"
+    )
+
+
+    with open(
+        file_path,
+        "wb"
+    ) as buffer:
+
+        shutil.copyfileobj(
+            file.file,
+            buffer
+        )
+
+
+    profile = (
+        db.query(CandidateProfile)
+        .filter(
+            CandidateProfile.user_id == current_user.id
+        )
+        .first()
+    )
+
+
+    if not profile:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Candidate profile not found"
+        )
+
+
+    profile.profile_image = file_path
+
+
+    db.commit()
+
+    db.refresh(profile)
+
+
+    return {
+        "profile_image": file_path
+    }

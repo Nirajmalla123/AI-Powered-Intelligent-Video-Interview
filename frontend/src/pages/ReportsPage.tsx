@@ -1,211 +1,302 @@
+import { useState } from "react";
+import { reportService } from "@/services/report.service";
+import { scoreService } from "@/services/score.service";
+
+import type { Report } from "@/types/report";
+import type { Score } from "@/types/score";
 import {
-  Trophy,
-  Brain,
-  Mic,
-  Eye,
-  Smile,
-  MessageSquare,
+  FileText,
+  Search,
   Download,
+  Brain,
+  MessageSquare,
+  Award,
 } from "lucide-react";
 
-import PageHeader from "@/components/common/PageHeader";
-import SectionCard from "@/components/common/SectionCard";
-import PrimaryButton from "@/components/common/PrimaryButton";
-
 export default function ReportsPage() {
+
+  const [interviewId, setInterviewId] = useState("");
+
+  const [report, setReport] = useState<Report | null>(null);
+
+  const [score, setScore] = useState<Score | null>(null);
+
+  const [loading, setLoading] = useState(false);
+
+
+  const loadReport = async () => {
+
+    if (!interviewId) return;
+
+    try {
+
+      setLoading(true);
+
+      const reportData =
+        await reportService.getReport(interviewId);
+
+      const scoreData =
+        await scoreService.getScore(interviewId);
+
+
+      setReport(reportData);
+
+      setScore(scoreData);
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Report not found.");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
+
+
   return (
+
     <div className="space-y-8">
 
-      <PageHeader
-        title="Interview Report"
-        subtitle="View your AI interview analysis and overall performance."
-      />
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div>
 
-        <div className="rounded-2xl bg-blue-600 p-6 text-white">
-          <Trophy size={34} />
-          <h2 className="mt-4 text-3xl font-bold">
-            87%
-          </h2>
-          <p>Overall Score</p>
-        </div>
+        <h1 className="text-3xl font-bold">
+          Interview Reports
+        </h1>
 
-        <div className="rounded-2xl border bg-white p-6">
-          <Brain
-            className="text-blue-600"
-            size={34}
-          />
-          <h2 className="mt-4 text-3xl font-bold">
-            91%
-          </h2>
-          <p>Technical Knowledge</p>
-        </div>
+        <p className="text-slate-500 mt-2">
+          View AI-generated interview reports.
+        </p>
 
-        <div className="rounded-2xl border bg-white p-6">
-          <Mic
-            className="text-blue-600"
-            size={34}
-          />
-          <h2 className="mt-4 text-3xl font-bold">
-            84%
-          </h2>
-          <p>Communication</p>
-        </div>
+      </div>
 
-        <div className="rounded-2xl border bg-white p-6">
-          <Eye
-            className="text-blue-600"
-            size={34}
-          />
-          <h2 className="mt-4 text-3xl font-bold">
-            88%
-          </h2>
-          <p>Confidence</p>
+
+
+      <div className="bg-white border rounded-2xl shadow p-6">
+
+        <div className="flex gap-3">
+
+
+          <div className="relative flex-1">
+
+            <Search
+              size={18}
+              className="absolute left-3 top-3 text-gray-400"
+            />
+
+
+            <input
+              type="number"
+              placeholder="Enter Interview ID..."
+              value={interviewId}
+              onChange={(e) =>
+                setInterviewId(e.target.value)
+              }
+              className="w-full border rounded-lg py-2 pl-10 pr-3"
+            />
+
+          </div>
+
+
+          <button
+            onClick={loadReport}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg"
+          >
+            Load Report
+          </button>
+
+
         </div>
 
       </div>
 
-      <SectionCard title="Performance Breakdown">
 
-        <div className="space-y-6">
 
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span>Technical Skills</span>
-              <span>91%</span>
-            </div>
 
-            <div className="h-3 rounded-full bg-slate-200">
-              <div className="h-3 w-[91%] rounded-full bg-blue-600"></div>
-            </div>
+      {
+        loading && (
+
+          <div className="text-center">
+            Loading...
           </div>
 
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span>Problem Solving</span>
-              <span>86%</span>
+        )
+      }
+
+
+
+
+
+      {
+        report && (
+
+          <>
+
+
+            <div className="grid md:grid-cols-4 gap-6">
+
+              <div className="bg-white border rounded-xl p-6">
+
+                <Award
+                  className="text-green-600 mb-3"
+                />
+
+                <h2 className="text-3xl font-bold">
+                  {score?.overall_score ?? "N/A"}
+                </h2>
+
+                <p className="text-slate-500">
+                  Overall Score
+                </p>
+
+              </div>
+
+
+              <div className="bg-white border rounded-xl p-6">
+
+                <Brain
+                  className="text-blue-600 mb-3"
+                />
+
+                <h2 className="font-semibold">
+                  Strengths
+                </h2>
+
+
+                <p className="mt-3 text-slate-600">
+                  {report.strengths}
+                </p>
+
+
+              </div>
+
+
+
+
+              <div className="bg-white border rounded-xl p-6">
+
+                <Brain
+                  className="text-red-600 mb-3"
+                />
+
+                <h2 className="font-semibold">
+                  Weaknesses
+                </h2>
+
+
+                <p className="mt-3 text-slate-600">
+                  {report.weaknesses}
+                </p>
+
+
+              </div>
+
+
+
+
+
+              <div className="bg-white border rounded-xl p-6">
+
+                <MessageSquare
+                  className="text-purple-600 mb-3"
+                />
+
+                <h2 className="font-semibold">
+                  Recommendations
+                </h2>
+
+
+                <p className="mt-3 text-slate-600">
+                  {report.recommendations}
+                </p>
+
+
+              </div>
+
+
+
             </div>
 
-            <div className="h-3 rounded-full bg-slate-200">
-              <div className="h-3 w-[86%] rounded-full bg-green-500"></div>
-            </div>
-          </div>
 
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span>Communication</span>
-              <span>84%</span>
-            </div>
 
-            <div className="h-3 rounded-full bg-slate-200">
-              <div className="h-3 w-[84%] rounded-full bg-orange-500"></div>
-            </div>
-          </div>
 
-          <div>
-            <div className="mb-2 flex justify-between">
-              <span>Confidence</span>
-              <span>88%</span>
-            </div>
 
-            <div className="h-3 rounded-full bg-slate-200">
-              <div className="h-3 w-[88%] rounded-full bg-purple-500"></div>
-            </div>
-          </div>
 
-        </div>
+            <div className="bg-white border rounded-2xl p-6">
 
-      </SectionCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+              <div className="flex justify-between items-center">
 
-        <SectionCard title="AI Feedback">
 
-          <div className="space-y-5">
+                <div>
 
-            <div className="flex gap-3">
-              <Brain className="text-blue-600" />
-              <p>
-                Strong technical understanding with
-                clear explanations.
-              </p>
-            </div>
+                  <h2 className="text-2xl font-bold">
+                    Report Summary
+                  </h2>
 
-            <div className="flex gap-3">
-              <Mic className="text-blue-600" />
-              <p>
-                Voice clarity is good but speaking pace
-                can be improved.
-              </p>
-            </div>
 
-            <div className="flex gap-3">
-              <Smile className="text-blue-600" />
-              <p>
-                Positive facial expressions detected
-                throughout the interview.
-              </p>
-            </div>
+                  <p className="text-slate-500 mt-1">
+                    AI generated interview assessment
+                  </p>
 
-            <div className="flex gap-3">
-              <MessageSquare className="text-blue-600" />
-              <p>
-                Answers were relevant and well
-                structured.
-              </p>
+
+                </div>
+
+
+
+
+                <button
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
+                >
+
+                  <Download size={18} />
+
+                  Download
+
+                </button>
+
+
+              </div>
+
+
+
+
+
+              <div className="mt-6 flex items-start gap-3">
+
+
+                <FileText className="text-blue-600"/>
+
+
+                <p className="text-slate-700 leading-7">
+
+                  {report.summary}
+
+                </p>
+
+
+              </div>
+
+
+
             </div>
 
-          </div>
 
-        </SectionCard>
 
-        <SectionCard title="Recommendations">
+          </>
 
-          <ul className="space-y-4 list-disc pl-5 text-slate-600">
+        )
+      }
 
-            <li>
-              Improve response speed.
-            </li>
 
-            <li>
-              Practice behavioural questions.
-            </li>
-
-            <li>
-              Maintain eye contact consistently.
-            </li>
-
-            <li>
-              Continue solving DSA problems.
-            </li>
-
-            <li>
-              Practice mock interviews weekly.
-            </li>
-
-          </ul>
-
-          <div className="mt-8">
-
-            <PrimaryButton>
-
-              <span className="flex items-center gap-2">
-
-                <Download size={18} />
-
-                Download PDF Report
-
-              </span>
-
-            </PrimaryButton>
-
-          </div>
-
-        </SectionCard>
-
-      </div>
 
     </div>
+
   );
+
 }

@@ -10,82 +10,48 @@ import ResumePage from "@/pages/ResumePage";
 
 import CandidateLayout from "@/layouts/CandidateLayout";
 
+import ProtectedRoute from "@/components/common/ProtectedRoute";
 
 import ReportsPage from "@/pages/ReportsPage";
 
+
 import InterviewsPage from "@/pages/InterviewsPage";
 import StartInterviewPage from "@/pages/StartInterviewPage";
+import InterviewDetailsPage from "@/pages/InterviewDetailsPage";
+import InterviewSessionPage from "@/pages/InterviewSessionPage";
+
+import NotFoundPage from "@/pages/NotFoundPage";
 
 export function AppRouter() {
-
   return (
-
     <Routes>
+      <Route path="/" element={<HomePage />} />
 
-      <Route
-        path="/"
-        element={<HomePage />}
-      />
+      <Route path="/login" element={<LoginPage />} />
 
+      <Route path="/register" element={<RegisterPage />} />
 
-      <Route
-        path="/login"
-        element={<LoginPage />}
-      />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<CandidateLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
 
+          <Route path="/profile" element={<ProfilePage />} />
 
-      <Route
-        path="/register"
-        element={<RegisterPage />}
-      />
+          <Route path="/resume" element={<ResumePage />} />
 
+          <Route path="/interviews" element={<InterviewsPage />} />
 
-      <Route element={<CandidateLayout />}>
+          <Route path="/start-interview" element={<StartInterviewPage />} />
 
-        <Route
-          path="/dashboard"
-          element={<DashboardPage />}
-        />
+          <Route path="/interviews/:id" element={<InterviewDetailsPage />} />
 
+          <Route path="/interviews/:id/session" element={<InterviewSessionPage />} />
 
-        <Route
-          path="/profile"
-          element={<ProfilePage />}
-        />
+          <Route path="/reports" element={<ReportsPage />} />
 
-
-        <Route
-          path="/resume"
-          element={<ResumePage />}
-        />
-
-
-        <Route
-          path="/interviews"
-          element={<InterviewsPage />}
-        />   
-        <Route
-          path="/start-interview"
-          element={<StartInterviewPage />}
-        />
-
-        <Route
-          path="/reports"
-          element={<ReportsPage />}
-        /> 
-
-
-        <Route
-          path="/start-interview"
-          element={<StartInterviewPage />}
-        />
-
-
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
       </Route>
-
-
     </Routes>
-
   );
-
 }

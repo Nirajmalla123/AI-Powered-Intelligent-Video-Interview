@@ -1,3 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import { interviewService } from "@/services/interview.service";
+
+
 import {
   Video,
   Mic,
@@ -8,6 +12,28 @@ import {
 } from "lucide-react";
 
 export default function StartInterviewPage() {
+  const navigate = useNavigate();
+
+const startInterview = async () => {
+
+  try {
+
+    await interviewService.startInterview(
+      "Python Fundamentals",
+      "Beginner"
+    );
+
+    navigate("/interviews");
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Unable to start interview.");
+
+  }
+
+};
   return (
     <div className="space-y-8">
 
@@ -118,6 +144,7 @@ export default function StartInterviewPage() {
 
 
         <button
+          onClick={startInterview}  
           className="
           mt-8
           w-full
