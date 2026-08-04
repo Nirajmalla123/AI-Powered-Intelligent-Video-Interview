@@ -1,54 +1,56 @@
 import api from "./api";
 
 
-export const resumeService = {
+const resumeService = {
 
 
-uploadResume: async(file: File)=>{
+  uploadResume: async (file: File) => {
 
     const formData = new FormData();
 
-    formData.append(
-        "file",
-        file
-    );
+    formData.append("file", file);
+
+
+    console.log("Sending file:", file);
 
 
     const response = await api.post(
-        "/resume/upload",
-        formData
+      "/resume/upload",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
 
 
     return response.data;
 
-},
+  },
 
 
 
-getResume: async()=>{
+  getResume: async () => {
 
-    const response = await api.get(
-        "/resume"
-    );
-
+    const response = await api.get("/resume");
 
     return response.data;
 
-},
+  },
 
 
 
-deleteResume: async()=>{
+  deleteResume: async () => {
 
-    const response = await api.delete(
-        "/resume"
-    );
-
+    const response = await api.delete("/resume");
 
     return response.data;
 
-}
+  }
 
 
 };
+
+
+export default resumeService;

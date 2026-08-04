@@ -1,176 +1,454 @@
-import { useState } from "react";
-import {
-  FileText,
-  UploadCloud,
-  Trash2,
-  Download,
-} from "lucide-react";
+// frontend/src/pages/ResumePage.tsx
 
-import PageHeader from "@/components/common/PageHeader";
-import SectionCard from "@/components/common/SectionCard";
-import PrimaryButton from "@/components/common/PrimaryButton";
+import { useEffect, useState } from "react";
+import resumeService from "@/services/resume.service";
 
-export default function ResumePage() {
-  const [resumeUploaded, setResumeUploaded] = useState(false);
+
+interface Resume {
+  id: number;
+  candidate_id: number;
+  file_name: string;
+  file_url: string;
+  file_type: string;
+  file_size: number;
+  raw_text: string;
+  parsed_skills: string;
+  parsed_languages: string;
+  parsed_projects: string;
+  parsed_experience: string;
+  uploaded_at: string;
+  updated_at: string;
+}
+
+
+const ResumePage = () => {
+
+  const [resume, setResume] = useState<Resume | null>(null);
+
   const [file, setFile] = useState<File | null>(null);
 
-  return (
-    <div className="space-y-8">
+  const [loading, setLoading] = useState(true);
 
-      <PageHeader
-        title="Resume"
-        subtitle="Upload your latest resume before starting interviews."
-      />
+  const [uploading, setUploading] = useState(false);
 
-      <div className="max-w-4xl">
 
-        <SectionCard title="Resume Management">
+  // Load resume when page opens
+  useEffect(() => {
 
-          {!resumeUploaded ? (
+    loadResume();
 
-            <div className="space-y-8">
+  }, []);
 
-              <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-12 text-center">
 
-                <UploadCloud
-                  size={60}
-                  className="mx-auto text-blue-600"
-                />
 
-                <h2 className="mt-5 text-2xl font-bold">
-                  Upload Your Resume
-                </h2>
+  const loadResume = async () => {
 
-                <p className="mt-3 text-slate-500">
-                  PDF or DOCX only
-                </p>
+    try {
 
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="mt-8 block w-full rounded-lg border bg-white p-3"
-                  onChange={(e) =>
-                    setFile(
-                      e.target.files?.[0] || null
-                    )
-                  }
-                />
+      const data = await resumeService.getResume();
 
-                <div className="mt-8">
+      setResume(data);
 
-                  <PrimaryButton
-                    disabled={!file}
-                    onClick={() => setResumeUploaded(true)}
-                  >
-                    Upload Resume
-                  </PrimaryButton>
+    }
+    catch(error){
 
-                </div>
+      console.log("No resume uploaded");
 
-              </div>
+      setResume(null);
 
-            </div>
+    }
+    finally{
 
-          ) : (
+      setLoading(false);
 
-            <div className="rounded-2xl border border-green-200 bg-green-50 p-8">
+    }
 
-              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+  };
 
-                <div className="flex items-center gap-5">
 
-                  <div className="rounded-xl bg-white p-4 shadow">
 
-                    <FileText
-                      size={42}
-                      className="text-blue-600"
-                    />
 
-                  </div>
+  // Upload Resume
 
-                  <div>
+  const handleUpload = async () => {
 
-                    <h2 className="text-xl font-bold">
 
-                      Resume Uploaded Successfully
+    if(!file){
 
-                    </h2>
+      alert("Please select a resume file");
 
-                    <p className="mt-2 text-slate-600">
+      return;
 
-                      Resume_2026.pdf
+    }
 
-                    </p>
 
-                    <p className="text-sm text-slate-500">
+    try {
 
-                      Uploaded just now
+      setUploading(true);
 
-                    </p>
 
-                  </div>
+      const data = await resumeService.uploadResume(file);
 
-                </div>
 
-                <div className="flex gap-4">
+      setResume(data);
 
-                  <button className="flex items-center gap-2 rounded-xl border px-5 py-3 hover:bg-white">
 
-                    <Download size={18} />
+      setFile(null);
 
-                    Download
 
-                  </button>
+    }
+    catch(error){
 
-                  <button
-                    onClick={() =>
-                      setResumeUploaded(false)
-                    }
-                    className="flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-white hover:bg-red-700"
-                  >
+      console.log(error);
 
-                    <Trash2 size={18} />
+      alert("Resume upload failed");
 
-                    Delete
+    }
+    finally{
 
-                  </button>
+      setUploading(false);
 
-                </div>
+    }
 
-              </div>
+  };
 
-            </div>
 
-          )}
 
-        </SectionCard>
 
-        <SectionCard title="Resume Tips">
 
-          <div className="space-y-4 text-slate-600">
+  // Delete Resume
 
-            <p>
-              ✔ Keep your resume to one page whenever possible.
-            </p>
+  const handleDelete = async()=>{
 
-            <p>
-              ✔ Include your latest projects and technical skills.
-            </p>
 
-            <p>
-              ✔ Mention internships and certifications.
-            </p>
+    try{
 
-            <p>
-              ✔ Use PDF format for the best compatibility.
-            </p>
 
-          </div>
+      await resumeService.deleteResume();
 
-        </SectionCard>
+
+      setResume(null);
+
+
+    }
+    catch(error){
+
+      console.log(error);
+
+      alert("Delete failed");
+
+    }
+
+
+  };
+
+
+
+
+
+
+  if(loading){
+
+    return (
+
+      <div className="p-6">
+
+        Loading resume...
 
       </div>
 
+    );
+
+  }
+
+
+
+
+
+  return (
+
+    <div className="p-6 max-w-4xl mx-auto">
+
+
+      <h1 className="text-3xl font-bold mb-6">
+
+        Resume Management
+
+      </h1>
+
+
+
+
+
+      {/* Upload Section */}
+
+      <div className="border rounded-lg p-5 mb-6">
+
+
+        <h2 className="text-xl font-semibold mb-3">
+
+          Upload Resume
+
+        </h2>
+
+
+
+        <input
+
+          type="file"
+
+          accept=".pdf,.doc,.docx"
+
+          onChange={(e)=>
+
+            setFile(e.target.files?.[0] || null)
+
+          }
+
+          className="mb-3"
+
+        />
+
+
+
+        <button
+
+          onClick={handleUpload}
+
+          disabled={uploading}
+
+          className="bg-blue-600 text-white px-5 py-2 rounded"
+
+        >
+
+          {uploading ? "Uploading..." : "Upload"}
+
+        </button>
+
+
+      </div>
+
+
+
+
+
+
+
+      {/* Resume Details */}
+
+      {
+
+      resume && (
+
+        <div className="border rounded-lg p-6">
+
+
+          <div className="flex justify-between items-center">
+
+
+            <h2 className="text-xl font-bold">
+
+              {resume.file_name}
+
+            </h2>
+
+
+
+            <button
+
+              onClick={handleDelete}
+
+              className="bg-red-600 text-white px-4 py-2 rounded"
+
+            >
+
+              Delete
+
+            </button>
+
+
+          </div>
+
+
+
+
+
+          <div className="mt-5 space-y-4">
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                File Type
+
+              </h3>
+
+              <p>{resume.file_type}</p>
+
+            </div>
+
+
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                Uploaded Date
+
+              </h3>
+
+
+              <p>
+
+              {new Date(resume.uploaded_at).toLocaleDateString()}
+
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                Skills
+
+              </h3>
+
+
+              <p>
+
+              {resume.parsed_skills || "Not extracted"}
+
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                Languages
+
+              </h3>
+
+
+              <p>
+
+              {resume.parsed_languages || "Not extracted"}
+
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                Projects
+
+              </h3>
+
+
+              <p>
+
+              {resume.parsed_projects || "Not extracted"}
+
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div>
+
+              <h3 className="font-semibold">
+
+                Experience
+
+              </h3>
+
+
+              <p>
+
+              {resume.parsed_experience || "Not extracted"}
+
+              </p>
+
+
+            </div>
+
+
+
+
+
+
+          </div>
+
+
+
+        </div>
+
+
+      )
+
+      }
+
+
+
+
+
+      {
+
+      !resume && (
+
+        <div className="border rounded-lg p-6 text-gray-500">
+
+          No resume uploaded yet.
+
+        </div>
+
+      )
+
+      }
+
+
+
+
+
     </div>
+
   );
-}
+
+};
+
+
+export default ResumePage;

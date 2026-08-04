@@ -11,7 +11,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-import { resumeService } from "@/services/resume.service";
+import resumeService from "@/services/resume.service";
 import { interviewService } from "@/services/interview.service";
 
 import PageHeader from "@/components/common/PageHeader";

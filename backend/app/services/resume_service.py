@@ -7,6 +7,13 @@ from sqlalchemy.orm import Session
 from app.models.resume import Resume
 from app.repositories.resume_repository import ResumeRepository
 
+from app.services.resume_parser import (
+    extract_text,
+    extract_skills,
+    extract_languages,
+    extract_projects,
+    extract_experience,
+)
 
 class ResumeService:
 
@@ -45,6 +52,22 @@ class ResumeService:
         with open(filepath, "wb") as buffer:
             buffer.write(content)
 
+            resume_text = extract_text(
+                filepath,
+                file.content_type,
+            )
+
+
+            skills = extract_skills(resume_text)
+
+            languages = extract_languages(resume_text)
+
+            projects = extract_projects(resume_text)
+
+            experience = extract_experience(resume_text)            
+
+
+
         existing = self.repository.get_by_candidate_id(
             db,
             candidate_id,
@@ -56,6 +79,11 @@ class ResumeService:
             existing.file_url = filepath
             existing.file_type = file.content_type
             existing.file_size = len(content)
+            existing.raw_text = resume_text
+            existing.parsed_skills = skills
+            existing.parsed_languages = languages
+            existing.parsed_projects = projects
+            existing.parsed_experience = experience            
 
             db.commit()
             db.refresh(existing)
@@ -68,6 +96,11 @@ class ResumeService:
             file_url=filepath,
             file_type=file.content_type,
             file_size=len(content),
+            raw_text=resume_text,
+            parsed_skills=skills,
+            parsed_languages=languages,
+            parsed_projects=projects,
+            parsed_experience=experience,
         )
 
         return self.repository.create(
