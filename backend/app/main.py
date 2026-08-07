@@ -27,7 +27,7 @@ from app.middleware.process_time import ProcessTimeMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 
 import os
-
+from app.api import tts
 
 setup_logging()
 app = FastAPI(
@@ -71,9 +71,12 @@ app.include_router(score_router)
 app.include_router(upload_router)
 app.include_router(resume_router)
 
+app.include_router(tts.router)
 
 
 @app.get("/")
+
+
 def root():
     return {"message": "AI Interview Assessment System API is running 🚀"}
 

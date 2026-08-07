@@ -3,35 +3,27 @@ import api from "./api";
 
 export const answerService = {
 
+
   createAnswer: async (
-    data: {
-      interview_id: number;
-      question_id: number;
-      answer_text?: string;
-      video_url?: string | null;
-    }
+    interviewId: string,
+    questionId: number
   ) => {
+
 
     const response = await api.post(
       "/answers",
-      data
+      {
+        interview_id: Number(interviewId),
+        question_id: questionId,
+        answer_text: null,
+        video_url: null,
+      }
     );
+
 
     return response.data;
 
   },
 
-
-  getAnswers: async (
-    interviewId: string
-  ) => {
-
-    const response = await api.get(
-      `/answers/interview/${interviewId}`
-    );
-
-    return response.data;
-
-  },
 
 };

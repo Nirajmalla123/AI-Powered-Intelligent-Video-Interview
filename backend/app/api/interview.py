@@ -7,7 +7,6 @@ from app.models.user import User
 from app.models.candidate_profile import CandidateProfile
 from app.schemas.interview import (
     InterviewCreate,
-    InterviewComplete,
     InterviewResponse,
 )
 from app.services.interview_service import InterviewService
@@ -113,7 +112,6 @@ def get_interview(
 )
 def complete_interview(
     interview_id: int,
-    data: InterviewComplete,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

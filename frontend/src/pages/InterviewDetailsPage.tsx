@@ -197,23 +197,43 @@ export default function InterviewDetailsPage() {
 </div>
 
 
-<button
-  onClick={() =>
-    navigate(`/interviews/${id}/session`)
-  }
-  className="
-    w-full
-    mt-6
-    bg-blue-600
-    hover:bg-blue-700
-    text-white
-    py-3
-    rounded-xl
-    font-semibold
-  "
->
-  Start Interview Session
-</button>
+{interview.status.toLowerCase() === "completed" ? (
+
+  <button
+    onClick={() => navigate("/reports")}
+    className="
+      w-full
+      mt-6
+      bg-green-600
+      hover:bg-green-700
+      text-white
+      py-3
+      rounded-xl
+      font-semibold
+    "
+  >
+    View Report
+  </button>
+
+) : (
+
+  <button
+    disabled
+    className="
+      w-full
+      mt-6
+      bg-gray-300
+      text-gray-600
+      py-3
+      rounded-xl
+      font-semibold
+      cursor-not-allowed
+    "
+  >
+    Interview In Progress
+  </button>
+
+)}
 
 
     </div>

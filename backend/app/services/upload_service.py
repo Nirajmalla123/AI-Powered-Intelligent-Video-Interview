@@ -63,11 +63,17 @@ class UploadService:
         )
 
 
-        if answer:
-            answer.video_url = file_path
+        if not answer:
+            raise Exception(
+                "Answer not found"
+            )
 
-            db.commit()
-            db.refresh(answer)
+
+        answer.video_url = file_path
+
+        db.commit()
+
+        db.refresh(answer)
 
 
         return file_path
