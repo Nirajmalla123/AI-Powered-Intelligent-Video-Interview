@@ -8,3 +8,5 @@ from app.api.report import router as report_router
 from app.api.score import router as score_router
 from app.api.upload import router as upload_router
 from app.api.resume import router as resume_router
+
+from app.api.speech_to_text import router as speech_to_text_router

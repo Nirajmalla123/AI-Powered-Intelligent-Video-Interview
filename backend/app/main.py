@@ -28,6 +28,7 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 
 import os
 from app.api import tts
+from app.api import speech_to_text
 
 setup_logging()
 app = FastAPI(
@@ -72,6 +73,7 @@ app.include_router(upload_router)
 app.include_router(resume_router)
 
 app.include_router(tts.router)
+app.include_router(speech_to_text.router)
 
 
 @app.get("/")
